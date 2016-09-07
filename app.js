@@ -1,11 +1,14 @@
 const express = require('express');
 const bodyParser  = require('body-parser');
-
+const cors = require('cors');
 const config = require('./configuration/config.json');
+
 const app = express();
 const matchController = require('./controllers/match')(config[config.env]);
 
 app.use(bodyParser.json());
+app.use(cors());
+
 
 app.get('/api/match', function(req,res){
     matchController.getMatches((e,rs)=>{
