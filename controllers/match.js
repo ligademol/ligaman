@@ -70,6 +70,26 @@ matchController.prototype.getMatchesByWeek = function(week, cb){
 });
 }
 
+matchController.prototype.updateMatch = function(match, cb){
+    sql.connect(this.config.cs).then(function(){    
+        new sql.Request()
+            .input('thuisscore',sql.Int, match.thuisscore)
+            .input('uitscore',sql.Int, match.uitscore)
+            .input('gespeeld',sql.Int, match.gespeeld)
+            .input('matchid',sql.Int, match.nr)
+            .query("UPDATE wedstrijd  SET thuisscore  = @thuisscore, uitscore=@uitscore, gespeeld = @gespeeld where nr = @matchid").then(function(rs){
+            
+            cb(null, rs);
+        }).catch(function(err){
+            cb(err,null)
+        });
+
+    }).catch(function(err){
+        cb(err, null);
+});
+}
+
+
 
 //Public
 module.exports = matchController;
