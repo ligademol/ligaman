@@ -1,5 +1,6 @@
 
 const sql = require('mssql');
+const Q = require('Q');
 
 function  matchController(config){
     if(this instanceof matchController)
@@ -10,49 +11,45 @@ function  matchController(config){
 
 
 
-matchController.prototype.getRanking = function(cb){
-    sql.connect(this.config.cs).then(function(){    
-        new sql.Request().query("SELECT * from vwranking ORDER BY p DESC, ds DESC").then(function(rs){
-            cb(null, rs);
-        }).catch(function(err){
-            cb(err,null)
-        });
-
-    }).catch(function(err){
-        cb(err, null);
-});
+matchController.prototype.getRanking =  function(){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
+        new sql.Request().query("SELECT * from vwranking ORDER BY p DESC, ds DESC")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
 }
 
 
 
-matchController.prototype.getMatches = function(cb){
-    sql.connect(this.config.cs).then(function(){    
-        new sql.Request().query("SELECT * from wedstrijd ORDER BY tijdstip").then(function(rs){
-            cb(null, rs);
-        }).catch(function(err){
-            cb(err,null)
-        });
 
-    }).catch(function(err){
-        cb(err, null);
-});
+
+matchController.prototype.getMatches = function(){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
+        new sql.Request().query("SELECT * from wedstrijd ORDER BY tijdstip")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
 }
 
-matchController.prototype.getMatch = function(matchid, cb){
-    sql.connect(this.config.cs).then(function(){    
+
+
+matchController.prototype.getMatch = function(matchid){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
         new sql.Request()
-            .input('matchid',sql.Int, matchid)
-            .query("SELECT * from wedstrijd where nr = @matchid").then(function(rs){
-            
-            cb(null, rs);
-        }).catch(function(err){
-            cb(err,null)
-        });
-
-    }).catch(function(err){
-        cb(err, null);
-});
+        .input('matchid',sql.Int, matchid)
+        .query("SELECT * from wedstrijd where nr = @matchid")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
 }
+
+
 
 matchController.prototype.getMatchesByWeek = function(week, cb){
     sql.connect(this.config.cs).then(function(){    
