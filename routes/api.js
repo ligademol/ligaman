@@ -1,6 +1,7 @@
 const express = require('express');
-const config = require('../configuration/config.json');
-const matchController = require('../controllers/match')(config[config.env]);
+const config = require('../configuration/config');
+
+const matchController = require('../controllers/match')(config);
 
 var router = express.Router();
 
