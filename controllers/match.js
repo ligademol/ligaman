@@ -1,6 +1,6 @@
 
 const sql = require('mssql');
-const Q = require('Q');
+const Q = require('q');
 
 function  matchController(config){
     if(this instanceof matchController)
