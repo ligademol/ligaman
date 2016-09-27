@@ -1,0 +1,89 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/dt.css"/>
+        <script type="text/javascript" src="js/jq.js"></script>
+        <script type="text/javascript" src="js/dt.js"></script>
+<script>
+    var dataTable = undefined;
+
+
+ function loadMatches(){
+
+        if(dataTable !== undefined){
+            dataTable.destroy();
+            dataTable = undefined;
+        } 
+
+        $.get( "api/match", function( dataSet ) {
+            
+            dataTable = $('#matchData').DataTable( {
+                data: dataSet,
+                    paging: true,
+                    ordering: true,
+                    pageLength:25,
+                columns: [
+           
+                    { title: "nr", data:"nr" },
+                    { title: "tijdstip", data:"tijdstip", type:"date",
+                    render: function(data) {
+                        return moment(data).format('DD/MM/YYYY HH:mm')                                                  
+                        }
+                     }, 
+                    { title: "week", data:"we" },                    
+                    { title: "bweek", data:"bw" },
+                    { title: "comp", data:"comp" },
+                    { title: "ronde", data:"ro" },
+                    { title: "speeldag", data:"sd" },                
+                    { title: "thuis", data:"thuis" },                    
+                    { title: "uit", data:"uit" },
+                    { title: "thuis", data:"thuisscore" },                    
+                    { title: "uit", data:"uitscore" },             
+                    { title: "gespeeld", data:"gespeeld" }                    
+                ]
+            } );
+        
+        });
+    }
+    function loadRankings(){
+
+        if(dataTable !== undefined){
+            dataTable.destroy();
+            dataTable = undefined;
+        } 
+
+        $.get( "api/rank", function( dataSet ) {
+             $.each(dataSet, function(i, v){                
+               v.pos = i+1;
+            });
+            
+            dataTable = $('#matchData').DataTable( {
+                data: dataSet,
+                    paging: false,
+                    ordering: false,
+                columns: [
+                    { title: "pos", data:"pos" },
+                    { title: "nr", data:"nr" },
+                    { title: "naam", data:"naam" },
+                    { title: "m", data:"m" },
+                    { title: "dv", data:"dv" },
+                    { title: "dt", data:"dt" },
+                    { title: "ds", data:"ds" },
+                    { title: "w", data:"w" },
+                    { title: "v", data:"v" },
+                    { title: "g", data:"g" },
+                    { title: "p", data:"p" },
+                ]
+            } );
+        
+        });
+    }
+</script>
+    </head>
+    <body>
+        <div id="dataContainer"> 
+         <table id="matchData"></table>
+        </div>    
+        <button onclick="loadMatches()">Matchen</button>
+           <button onclick="loadRankings()">Stand</button>
+    </body>
+</html>

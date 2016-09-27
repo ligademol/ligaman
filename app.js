@@ -6,6 +6,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static('public'));
 app.use('/api', require('./routes/api'));
 
 var server = app.listen(process.env.PORT || 3000, ()=> 
