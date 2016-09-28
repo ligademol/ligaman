@@ -44,16 +44,18 @@ router.post('/match/:id', function(req,res,next){
     else(res.status(500).send('match ids not matching'));
 });
 
+
+router.get('/week', function(req,res,next){
+    matchController.getWeeks()
+    .then((rs)=>res.json(rs))
+    .catch((e)=>res.status(500).send(e));
+});
+
 router.get('/week/:week', function(req,res,next){
     var week = req.params.week;
-    matchController.getMatchesByWeek(week,(e,rs)=>{
-        if(e!==null){
-              res.status(500).send(e);
-        }
-        else{
-            res.json(rs);
-        }
-    });
+    matchController.getMatchesByWeek(week)
+    .then((rs)=>res.json(rs))
+    .catch((e)=>res.status(500).send(e));
 });
 
 router.get('/rank', function(req,res,next){

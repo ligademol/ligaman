@@ -13,5 +13,4 @@ function Config(){
         return new config()
     };
 }
-
 module.exports = new Config();

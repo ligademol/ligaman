@@ -9,8 +9,6 @@ function  matchController(config){
 }
 
 
-
-
 matchController.prototype.getRanking =  function(){
     var d = Q.defer();   
     sql.connect(this.config.cs).then(()=>{    
@@ -22,13 +20,20 @@ matchController.prototype.getRanking =  function(){
 }
 
 
-
-
-
 matchController.prototype.getMatches = function(){
     var d = Q.defer();   
     sql.connect(this.config.cs).then(()=>{    
         new sql.Request().query("SELECT * from wedstrijd ORDER BY tijdstip")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
+}
+
+matchController.prototype.getWeeks = function(){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
+        new sql.Request().query("SELECT DISTINCT we as week, bw as bondsweek, datum, CASE comp WHEN 'LIGA' THen 'liga' ELSE 'beker' END as competitie from wedstrijd WHERE comp NOT LIKE 'VRIEND%' ORDER BY datum")
         .then((rs)=>d.resolve(rs))
         .catch((err)=>d.reject(err));
     }).catch((err)=>d.reject(err));
@@ -50,43 +55,32 @@ matchController.prototype.getMatch = function(matchid){
 }
 
 
-
-matchController.prototype.getMatchesByWeek = function(week, cb){
-    sql.connect(this.config.cs).then(function(){    
+matchController.prototype.getMatchesByWeek = function(week){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
         new sql.Request()
-            .input('week',sql.Int, week)
-            .query("SELECT * from wedstrijd where we = @week ORDER by tijdstip").then(function(rs){
-            
-            cb(null, rs);
-        }).catch(function(err){
-            cb(err,null)
-        });
-
-    }).catch(function(err){
-        cb(err, null);
-});
+        .input('week',sql.Int, week)
+        .query("SELECT * from wedstrijd where we = @week ORDER by tijdstip")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
 }
 
-matchController.prototype.updateMatch = function(match, cb){
-    sql.connect(this.config.cs).then(function(){    
+matchController.prototype.updateMatch = function(match){
+    var d = Q.defer();   
+    sql.connect(this.config.cs).then(()=>{    
         new sql.Request()
             .input('thuisscore',sql.Int, match.thuisscore)
             .input('uitscore',sql.Int, match.uitscore)
             .input('gespeeld',sql.Int, match.gespeeld)
             .input('matchid',sql.Int, match.nr)
-            .query("UPDATE wedstrijd  SET thuisscore  = @thuisscore, uitscore=@uitscore, gespeeld = @gespeeld where nr = @matchid").then(function(rs){
-            
-            cb(null, rs);
-        }).catch(function(err){
-            cb(err,null)
-        });
-
-    }).catch(function(err){
-        cb(err, null);
-});
+            .query("UPDATE wedstrijd  SET thuisscore  = @thuisscore, uitscore=@uitscore, gespeeld = @gespeeld where nr = @matchid")
+        .then((rs)=>d.resolve(rs))
+        .catch((err)=>d.reject(err));
+    }).catch((err)=>d.reject(err));
+    return d.promise;
 }
-
-
 
 //Public
 module.exports = matchController;
